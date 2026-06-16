@@ -1,0 +1,208 @@
+<style>
+  .icon-with-text-wrapper { box-sizing: border-box; }
+  .icon-with-text-wrapper .sec-head { margin-bottom: 40px; }
+  .icon-with-text-wrapper .sec-head .section-heading { margin: 0 0 12px; }
+  .icon-with-text-wrapper .icon-grid { display: grid; }
+  .icon-with-text-wrapper .icon-item { display: flex; flex-direction: column; }
+  .icon-with-text-wrapper .icon-item.align-left { align-items: flex-start; }
+  .icon-with-text-wrapper .icon-item.align-center { align-items: center; }
+  .icon-with-text-wrapper .icon-item.align-right { align-items: flex-end; }
+  .icon-with-text-wrapper .icon-wrap { display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+  .icon-with-text-wrapper .icon-wrap img { object-fit: contain; display: block; }
+  .icon-with-text-wrapper .icon-title { font-size: 1.6rem; font-weight: 600; margin: 0 0 8px; line-height: 1.3; }
+  .icon-with-text-wrapper .icon-desc { font-size: 1.4rem; color: rgba(var(--color-foreground), 0.75); margin: 0; line-height: 1.6; }
+
+  #icon-with-text-{{ section.id }} { padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px; }
+  #icon-with-text-{{ section.id }} .sec-head { text-align: {{ section.settings.text_alignment }}; }
+  #icon-with-text-{{ section.id }} .icon-grid { grid-template-columns: repeat({{ section.settings.columns_desktop }}, 1fr); gap: {{ section.settings.column_gap }}px; }
+  #icon-with-text-{{ section.id }} .icon-item { text-align: {{ section.settings.text_alignment }}; }
+  #icon-with-text-{{ section.id }} .icon-wrap img { width: {{ section.settings.icon_size }}px; height: {{ section.settings.icon_size }}px; }
+
+  @media screen and (max-width: 749px) {
+    #icon-with-text-{{ section.id }} .icon-grid { grid-template-columns: repeat({{ section.settings.columns_mobile }}, 1fr); gap: 20px; }
+  }
+</style>
+
+<div class="icon-with-text-wrapper color-{{ section.settings.color_scheme }} gradient" id="icon-with-text-{{ section.id }}">
+  <div class="page-width">
+
+    {%- if section.settings.heading != blank or section.settings.description != blank -%}
+      <div class="sec-head">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="section-heading h2">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.description != blank -%}
+          <div class="rte">{{ section.settings.description }}</div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <div class="icon-grid">
+        {%- for block in section.blocks -%}
+          <div class="icon-item align-{{ section.settings.text_alignment }}" {{ block.shopify_attributes }}>
+            {%- if block.settings.icon != blank -%}
+              <div class="icon-wrap">
+                <img
+                  src="{{ block.settings.icon | image_url: width: 240 }}"
+                  alt="{{ block.settings.title | strip_html | escape }}"
+                  width="{{ section.settings.icon_size }}"
+                  height="{{ section.settings.icon_size }}"
+                  loading="lazy"
+                >
+              </div>
+            {%- endif -%}
+            {%- if block.settings.title != blank -%}
+              <h3 class="icon-title">{{ block.settings.title }}</h3>
+            {%- endif -%}
+            {%- if block.settings.description != blank -%}
+              <div class="icon-desc rte">{{ block.settings.description }}</div>
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Icon with Text",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Why Choose Us"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Add a short description for this section.</p>"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "label": "Columns (desktop)",
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns (mobile)",
+      "options": [
+        { "value": "1", "label": "1 column" },
+        { "value": "2", "label": "2 columns" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "range",
+      "id": "column_gap",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "label": "Gap between items",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "min": 30,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "label": "Icon size",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 60
+    }
+  ],
+  "blocks": [
+    {
+      "type": "icon_item",
+      "name": "Icon Item",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Icon image"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "title",
+          "label": "Title",
+          "default": "Feature Title"
+        },
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "Description",
+          "default": "<p>Add a short description for this icon item.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Icon with Text",
+      "blocks": [
+        { "type": "icon_item" },
+        { "type": "icon_item" },
+        { "type": "icon_item" },
+        { "type": "icon_item" }
+      ]
+    }
+  ]
+}
+{% endschema %}
